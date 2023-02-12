@@ -11,9 +11,10 @@ if (!process.env.WINSTON_SERVER_HOST) {
   if (
     fs.existsSync(path.resolve(path.join(__dirname, "settings", "config.json")))
   ) {
-    config = require(path.resolve(
+    let settings = path.resolve(
       path.join(__dirname, "settings", "config.json")
-    ));
+    );
+    config = require(settings);
   }
 } else {
   config.fqdn = process.env.WINSTON_SERVER_HOST;
@@ -63,6 +64,5 @@ const main = async () => {
   }
   const server = new WinstonSocketServer(serverOptions);
   new Winston(server);
-
 };
 main();

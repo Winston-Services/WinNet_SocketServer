@@ -26,7 +26,13 @@ const TestOne = props => {
     values.socket.once("identified_as", (data) => {
       console.log(data);
     });
+    
+    values.socket.once("genesis", (data) => {
+      console.log("genesis", data);
+      handler({...values, blocks:[data]})
+    });
     values.socket.emit("identify", {});
+    values.socket.emit("genesis", {});
   };
   return (
     <React.Fragment>
