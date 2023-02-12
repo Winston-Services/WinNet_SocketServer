@@ -1,13 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const express = require("express");
-const cors = require("cors");
-const vhost = require("vhost");
-const vhttps = require("vhttps");
-const serveIndex = require("serve-index");
-const SocketService = require("socket.io");
 
-require("dotenv").config();
+import path from "path"
+import express from "express"
+import cors from "cors"
+import vhost from "vhost"
+import vhttps from "vhttps"
+import serveIndex from "serve-index"
+import { Server } from "socket.io"
+import dotenv from "dotenv"
+import { createServer } from "http"
+
+dotenv.config();
 
 class WinstonSocketServer {
   _primaryService = express();
@@ -98,9 +100,9 @@ class WinstonSocketServer {
         this._SSLCredentials,
         this._primaryService
       );
-      this._httpServer = require("http").createServer(this._primaryService);
+      this._httpServer = createServer(this._primaryService);
     } else {
-      this._httpServer = require("http").createServer(this._primaryService);
+      this._httpServer = createServer(this._primaryService);
     }
 
     this._vhostApp = express();
@@ -155,9 +157,9 @@ class WinstonSocketServer {
       vhost(`www.${this._fqdn}`, this._vhostApp)
     );
     if (this._httpsServer) {
-      this._io = SocketService(this._httpsServer);
+      this._io = new Server(this._httpsServer);
     } else {
-      this._io = SocketService(this._httpServer);
+      this._io = new Server(this._httpServer);
       this._io.on("SERVICE_VERIFIER", (client) => {
         client.emit("SERVICE_VERIFIED", {verifier:  {...this._verifier}});        
       });
@@ -182,4 +184,4 @@ class WinstonSocketServer {
     return '0x'
   }
 }
-module.exports = { WinstonSocketServer };
+export {WinstonSocketServer as default }

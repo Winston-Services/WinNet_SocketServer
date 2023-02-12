@@ -1,30 +1,38 @@
-const fs = require("fs");
-const path = require("path");
-const dns = require("node:dns/promises");
-const { Winston } = require("./Winston");
-const { WinstonSocketServer } = require("./WinstonSocketServer");
-require("dotenv").config();
+import { readFile, access } from "fs/promises"
+import { dirname, resolve, join } from "path"
+import dns from "dns/promises"
+import  Winston from "./Winston.js"
+import WinstonSocketServer from "./WinstonSocketServer.js"
+import dotenv from "dotenv"
+import { fileURLToPath } from 'url';
+
+dotenv.config()
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
+
 let serverOptions = {};
 let config = {};
 let fqdn = "winston.services";
 if (!process.env.WINSTON_SERVER_HOST) {
-  if (
-    fs.existsSync(path.resolve(path.join(__dirname, "settings", "config.json")))
-  ) {
-    let settings = path.resolve(
-      path.join(__dirname, "settings", "config.json")
-    );
-    config = require(settings);
+  const configPath = resolve(join(__dirname, "settings", "config.json"))
+
+  try {
+    await access(configPath)
+    config = JSON.parse((await readFile(configPath)).toString());
+  } catch {
+
   }
 } else {
   config.fqdn = process.env.WINSTON_SERVER_HOST;
-  if (
-    fs.existsSync(path.resolve(path.join(__dirname, "settings", "config.json")))
-  ) {
-    let _config = require(path.resolve(
-      path.join(__dirname, "settings", "config.json")
-    ));
-    config = { ...config, ..._config };
+  try {
+    await access(configPath)
+    config = {
+      ...config,
+      ...JSON.parse((await readFile(configPath)).toString())
+    }
+  } catch {
+
   }
 }
 serverOptions.fqdn = config.fqdn || fqdn;
@@ -54,7 +62,7 @@ if (config.hasOwnProperty("ssl")) {
   }
 }
 
-const main = async () => {
+// const main = async () => {
   try {
     const hostDNS = await dns.resolveTxt(serverOptions.fqdn);
     // serverOptions.address: "0x",
@@ -64,5 +72,6 @@ const main = async () => {
   }
   const server = new WinstonSocketServer(serverOptions);
   new Winston(server);
-};
-main();
+
+// };
+// main();

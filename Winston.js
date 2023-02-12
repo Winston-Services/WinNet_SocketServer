@@ -1,4 +1,5 @@
-const { WinstonStateBlock } = require("./WinstonStateBlock");
+import { WinstonStateBlock } from "./WinstonStateBlock";
+
 class Winston {
   constructor(server) {
     this.nodes = [];
@@ -19,17 +20,17 @@ class Winston {
           id: client.id
         });
       });
-      client.on("genesis", () => {
-        client.emit("genesis", {
+      client.on('genesis', () => {
+        client.emit('genesis', {
           fqdn: this.node,
           address: this.address,
           id: client.id,
-          block: new WinstonStateBlock({ address: "0x" })
-        });
-      });
+          block: new WinstonStateBlock({address: '0x'})
+        })
+      })
     });
     this.Server().listen();
     return this;
   }
 }
-module.exports = { Winston };
+export { Winston as default }
