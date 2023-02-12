@@ -1,3 +1,5 @@
+import { WinstonStateBlock } from "./WinstonStateBlock";
+
 class Winston {
   constructor(server) {
     this.nodes = [];
@@ -12,12 +14,20 @@ class Winston {
     this.Server()._io.on("connect", client => {
       client.emit("connected", { fqdn: this.Server()._fqdn, id: client.id });
       client.on("identify", data => {
-        this.Server()._io.emit("identified_as", {
+        client.emit("identified_as", {
           fqdn: this.node,
           address: this.address,
           id: client.id
         });
       });
+      client.on('genesis', () => {
+        client.emit('genesis', {
+          fqdn: this.node,
+          address: this.address,
+          id: client.id,
+          block: new WinstonStateBlock({address: '0x'})
+        })
+      })
     });
     this.Server().listen();
     return this;
