@@ -1,29 +1,22 @@
-const fs = require("fs");
-const path = require("path");
-const dns = require("node:dns/promises");
-const { Winston } = require("./Winston");
-const { WinstonSocketServer } = require("./WinstonSocketServer");
-require("dotenv").config();
+import fs from "fs";
+import path from "path";
+import dns from "node:dns/promises";
+import Winston from "./Winston.js";
+import WinstonSocketServer from "./WinstonSocketServer.js";
+import("dotenv");
+
 let serverOptions = {};
 let config = {};
 let fqdn = "winston.services";
 if (!process.env.WINSTON_SERVER_HOST) {
-  if (
-    fs.existsSync(path.resolve(path.join(__dirname, "settings", "config.json")))
-  ) {
-    let settings = path.resolve(
-      path.join(__dirname, "settings", "config.json")
-    );
+  if (fs.existsSync(path.resolve(path.join("settings", "config.json")))) {
+    let settings = path.resolve(path.join("settings", "config.json"));
     config = require(settings);
   }
 } else {
   config.fqdn = process.env.WINSTON_SERVER_HOST;
-  if (
-    fs.existsSync(path.resolve(path.join(__dirname, "settings", "config.json")))
-  ) {
-    let _config = require(path.resolve(
-      path.join(__dirname, "settings", "config.json")
-    ));
+  if (fs.existsSync(path.resolve(path.join("settings", "config.json")))) {
+    let _config = require(path.resolve(path.join("settings", "config.json")));
     config = { ...config, ..._config };
   }
 }

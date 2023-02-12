@@ -1,13 +1,15 @@
-const fs = require("fs");
-const path = require("path");
-const express = require("express");
-const cors = require("cors");
-const vhost = require("vhost");
-const vhttps = require("vhttps");
-const serveIndex = require("serve-index");
-const SocketService = require("socket.io");
+import fs from "fs";
+import path from "path";
+import express from "express";
+import cors from "cors";
+import http from "http";
+import vhost from "vhost";
+import vhttps from "vhttps";
+import serveIndex from "serve-index";
+import { Server as SocketService } from "socket.io";
 
-require("dotenv").config();
+import("dotenv")
+//.config();
 
 class WinstonSocketServer {
   _primaryService = express();
@@ -67,13 +69,10 @@ class WinstonSocketServer {
     }
     this._primaryService.disable("x-powered-by");
     this._primaryService.use((req, res, next) => {
-      res.setHeader("x-powered-by", 'Winston Network v1.0');
+      res.setHeader("x-powered-by", "Winston Network v1.0");
       next();
     });
-    const corsWhitelist = [
-      this._fqdn,
-      "www." + this._fqdn
-    ];
+    const corsWhitelist = [this._fqdn, "www." + this._fqdn];
 
     function handleCorsDelegation(overrideCallback = null) {
       if (overrideCallback) {
@@ -98,9 +97,9 @@ class WinstonSocketServer {
         this._SSLCredentials,
         this._primaryService
       );
-      this._httpServer = require("http").createServer(this._primaryService);
+      this._httpServer = http.createServer(this._primaryService);
     } else {
-      this._httpServer = require("http").createServer(this._primaryService);
+      this._httpServer = http.createServer(this._primaryService);
     }
 
     this._vhostApp = express();
@@ -147,39 +146,32 @@ class WinstonSocketServer {
     });
     console.log("Loading Virtual Host");
     console.log("Loading " + this._fqdn);
-    this._primaryService.use(
-      vhost(this._fqdn, this._vhostApp)
-    );
+    this._primaryService.use(vhost(this._fqdn, this._vhostApp));
     console.log("Loading Virtual Host Subdomain");
-    this._primaryService.use(
-      vhost(`www.${this._fqdn}`, this._vhostApp)
-    );
+    this._primaryService.use(vhost(`www.${this._fqdn}`, this._vhostApp));
     if (this._httpsServer) {
-      this._io = SocketService(this._httpsServer);
+      this._io = new SocketService(this._httpsServer);
     } else {
-      this._io = SocketService(this._httpServer);
-      this._io.on("SERVICE_VERIFIER", (client) => {
-        client.emit("SERVICE_VERIFIED", {verifier:  {...this._verifier}});        
+      this._io = new SocketService(this._httpServer);
+      this._io.on("SERVICE_VERIFIER", client => {
+        client.emit("SERVICE_VERIFIED", { verifier: { ...this._verifier } });
       });
     }
     return this;
   }
   listen() {
     if (this._defaultSSLCredentials) {
-      this._httpsServer.listen(
-        443,
-        () => {
-          console.log("Winston Secure Socket Server Started");
-          console.log("Winston Secure API Server Started");
-        }
-      );
+      this._httpsServer.listen(443, () => {
+        console.log("Winston Secure Socket Server Started");
+        console.log("Winston Secure API Server Started");
+      });
     }
     this._httpServer.listen(80, () => {
       console.log("Winston Socket Server Started");
     });
   }
   verifier() {
-    return '0x'
+    return "0x";
   }
 }
-module.exports = { WinstonSocketServer };
+export default WinstonSocketServer;

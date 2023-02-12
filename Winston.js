@@ -1,4 +1,4 @@
-const { WinstonStateBlock } = require("./WinstonStateBlock");
+import WinstonStateBlock from "./public/app/WinstonStateBlock.js";
 class Winston {
   constructor(server) {
     this.nodes = [];
@@ -32,4 +32,4 @@ class Winston {
     return this;
   }
 }
-module.exports = { Winston };
+export default Winston;
