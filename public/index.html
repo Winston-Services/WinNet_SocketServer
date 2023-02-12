@@ -16,6 +16,9 @@
     <script type="module">
         import WinstonStateBlock from './app/WinstonStateBlock.js';
         window.WinstonStateBlock = WinstonStateBlock;
+        import RickleScript from './app/RickleScript.js';
+        window.RickleScript = RickleScript;
+        
     </script>
     <script src="https://unpkg.com/babel-standalone@6/babel.min.js"></script>
     <script type="text/babel" src="./app/index.js" crossorigin></script>
@@ -23,8 +26,6 @@
     <script type="text/babel" src="./app/client.js" crossorigin></script>
     <script type="text/babel" src="./app/start.js" crossorigin></script>
     <script type="text/babel">
-
-
         const e = React.createElement;
         const App = () => {
             const [state, dispatch] = React.useState({ currentHost: "Winston Services", nodes: [] });

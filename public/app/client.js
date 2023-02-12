@@ -5,7 +5,7 @@ const TestOne = props => {
       let active = true;
       if (active) {
         if (!values.connected) {
-          const socket = io('http://winston.services');
+          const socket = io("http://winston.services");
           socket.on("connected", client => {
             console.log("Client Returned", client);
             handler({
@@ -23,23 +23,20 @@ const TestOne = props => {
     [values, handler]
   );
   const verifyHost = () => {
-    values.socket.once("identified_as", (data) => {
+    values.socket.once("identified_as", data => {
       console.log(data);
     });
-    
-    values.socket.once("genesis", (data) => {
+
+    values.socket.once("genesis", data => {
       console.log("genesis", data);
-      handler({...values, blocks:[data]})
+      handler({ ...values, blocks: [data] });
     });
     values.socket.emit("identify", {});
     values.socket.emit("genesis", {});
   };
   return (
-    <React.Fragment>
-      <p>
-        {values.connected}
-      </p>
-      <button onClick={verifyHost}>Verify Host</button>
-    </React.Fragment>
+    <p>
+      {values.connected} <button onClick={verifyHost}>Verify Host</button>
+    </p>
   );
 };
