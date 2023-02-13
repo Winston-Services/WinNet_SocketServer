@@ -7,8 +7,8 @@ import vhost from "vhost";
 import vhttps from "vhttps";
 import serveIndex from "serve-index";
 import { Server as SocketService } from "socket.io";
-
-import("dotenv")
+import Router from './api/router.js';
+import("dotenv");
 //.config();
 
 class WinstonSocketServer {
@@ -52,7 +52,7 @@ class WinstonSocketServer {
       }
     }
   ) {
-    console.log(options);
+    // console.log(options);
     if (options && options.hasOwnProperty("fqdn")) {
       this._fqdn = options.fqdn;
     }
@@ -119,7 +119,15 @@ class WinstonSocketServer {
         callback(null, { origin: true });
       })
     );
-
+    
+    this._vhostApp.use(
+      cors(handleCorsDelegation()),
+      express.json(),
+      express.urlencoded({
+        extended: true
+      }),
+      Router
+    );
     this._vhostApp.use(
       cors(handleCorsDelegation()),
       express.json(),
@@ -137,10 +145,10 @@ class WinstonSocketServer {
     this._vhostApp.get("/*", (req, res, next) => {
       //try base static files first
       const baseFilePath = req.path;
-      console.log("VHostRequest : ", baseFilePath);
+      // console.log("VHostRequest : ", baseFilePath);
       return res.sendFile(
         path.resolve(
-          path.join(__dirname, "public", baseFilePath) //req.path
+          path.join("public", baseFilePath) //req.path
         )
       );
     });

@@ -169,6 +169,9 @@ class RickleScript {
     for (let i = 0; i < n; i++) this.__memory.push(this.__memory);
   }
   static add(n1, n2) {
+    if (typeof n1 === "string") {
+      return [n1, n2].join("");
+    }
     return (parseInt(n1, 2) + parseInt(n2, 2)).toString(2);
   }
   static subtract(n1, n2) {
@@ -181,29 +184,37 @@ class RickleScript {
     return (parseInt(n1, 2) / parseInt(n2, 2)).toString(2);
   }
   static not(n1) {
-    return ~parseInt(n1, 2);
+    return ~parseInt(n1, 2).toString(2);
   }
   static and(n1, n2) {
     return (parseInt(n1, 2) & parseInt(n2, 2)).toString(2);
   }
   static xor(n1, n2) {
-    return (parseInt(n1, 2) ^ parseInt(n2, 2)).toString(2);
+    return !(!n1 && !n2) && !(n1 && n2);
   }
   static or(n1, n2) {
     return (parseInt(n1, 2) | parseInt(n2, 2)).toString(2);
   }
-  static nor(n1, n2) {
-    return this.not(this.or(~n1, ~n2).toString(2)).toString(2);
-  }
-  loop() {
-    this._loop = true;
+  loop(mem) {
+    if (this._loop) {
+      this._loop = false;
+      return mem;
+    }
+    if (!this._loop) {
+      this._loop = true;
+      return mem;
+    }
   }
   compile(fileType = "txt") {
+    if (this._loop) throw Error("Unable to compile while looping.");
     switch (fileType) {
       case "txt":
       default:
         return this._memory.join("");
     }
+  }
+  toBuffer() {
+    return new Buffer.from(this.__memory);
   }
 }
 
