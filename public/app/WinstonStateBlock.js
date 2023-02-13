@@ -267,20 +267,19 @@ class WinstonStateBlock {
     if (typeof bits !== "string") return false;
     return bits.match(/[a-z,A-Z,0-9]/g).join("").length === 3;
   }
+  
   toJSON() {
-    return JSON.parse(
-      JSON.stringify({
-        address: this.address,
-        block: this.getHeader(),
-        state: this.state,
-        precedingSignature: this.precedingSignature,
-        signature: this.signature || undefined,
-        index: this.index,
-        nonce: this.nonce,
-        timestamp: this.timestamp,
-        chainId: this.chainId
-      })
-    );
+    return {
+      address: this.address,
+      block: this.getHeader(),
+      state: this.state,
+      precedingSignature: this.precedingSignature,
+      signature: this.signature || undefined,
+      index: this.index,
+      nonce: this.nonce,
+      timestamp: this.timestamp,
+      chainId: this.chainId
+    }
   }
 }
 
