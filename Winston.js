@@ -1,4 +1,6 @@
+import genesis from './genesis.json' assert { type: 'json' }
 import WinstonStateBlock from "./public/app/WinstonStateBlock.js";
+
 class Winston {
   constructor(server) {
     this.nodes = [];
@@ -24,7 +26,7 @@ class Winston {
           fqdn: this.node,
           address: this.address,
           id: client.id,
-          block: new WinstonStateBlock({ address: "0x" })
+          block: new WinstonStateBlock(genesis)
         });
       });
     });
