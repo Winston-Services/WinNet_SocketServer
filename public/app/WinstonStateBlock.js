@@ -25,11 +25,13 @@ class WinstonStateBlock {
   }
 
   static buildGrid(block, offset = 0) {
+    const ROW = []
     for (const key of Object.keys(block)) {
-      if (block[key] === undefined) block[key] = '000'
+      const object = {}
+      object[key] = block[key] === undefined ? '000' : block[key]
+      ROW.push(object)
     }
     const GRID = [];
-    let ROW = [...ALPHABET]
 
     if (offset !== 0) {
       let _thisRow = [...ROW];
