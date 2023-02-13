@@ -145,6 +145,7 @@ class WinstonStateBlock {
   toJSON() {
     const object = {}
     for (const key of this.keys) {
+      if (typeof this[key] === 'function') throw new Error('winStateBlock.toJSON: functions not allowed')
       object[key] = this[key]
     }
     return object
