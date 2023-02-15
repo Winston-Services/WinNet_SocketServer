@@ -1,126 +1,45 @@
+const ALPHABET = ['A', 'B', 'C', 'D', 'E', 'F', 'G', 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q', 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z']
+
 class WinstonStateBlock {
-  constructor({
-    address = "0x",
-    block = [
-      ...WinstonStateBlock.buildGrid(
-        {
-          A: "000",
-          B: "000",
-          C: "000",
-          D: "000",
-          E: "000",
-          F: "000",
-          G: "000",
-          H: "000",
-          I: "000",
-          J: "000",
-          K: "000",
-          L: "000",
-          M: "000",
-          N: "000",
-          O: "000",
-          P: "000",
-          Q: "000",
-          R: "000",
-          S: "000",
-          T: "000",
-          U: "000",
-          V: "000",
-          W: "000",
-          X: "000",
-          Y: "000",
-          Z: "000"
-        },
-        0
-      )
-    ],
-    state = [],
-    precedingSignature = "0x",
-    signature = "0x",
-    index = 0,
-    nonce = 0,
-    timestamp = +new Date("02/14/2023"),
-    chainId = "01010101"
-  }) {
+
+  static keys = [
+    address,
+    block,
+    state,
+    precedingSignature,
+    signature,
+    index,
+    nonce,
+    timestamp,
+    chainId
+  ]
+
+  constructor(input) {
     // debugger
     // console.log("Inside state handler", address, block);
-    this.address = address;
-    this.block = block;
-    this.state = state;
-    this.precedingSignature = precedingSignature;
-    this.signature = signature;
-    this.index = index;
-    this.nonce = nonce;
-    this.timestamp = timestamp;
-    this.chainId = chainId;
+    for (const key of this.keys) {
+      const value = input[key]
+      if (value === undefined) throw new Error(`StateBlockError: expected ${key} to be defined`)
+      this[key] = value
+    }
   }
 
-  static buildGrid(
-    {
-      A = "000",
-      B = "000",
-      C = "000",
-      D = "000",
-      E = "000",
-      F = "000",
-      G = "000",
-      H = "000",
-      I = "000",
-      J = "000",
-      K = "000",
-      L = "000",
-      M = "000",
-      N = "000",
-      O = "000",
-      P = "000",
-      Q = "000",
-      R = "000",
-      S = "000",
-      T = "000",
-      U = "000",
-      V = "000",
-      W = "000",
-      X = "000",
-      Y = "000",
-      Z = "000"
-    },
-    offset = 0
-  ) {
+  static buildGrid(block, offset = 0) {
+    const ROW = []
+    for (const key of Object.keys(block)) {
+      const object = {}
+      object[key] = block[key] === undefined ? '000' : block[key]
+      ROW.push(object)
+    }
     const GRID = [];
-    let ROW = [
-      A,
-      B,
-      C,
-      D,
-      E,
-      F,
-      G,
-      H,
-      I,
-      J,
-      K,
-      L,
-      M,
-      N,
-      O,
-      P,
-      Q,
-      R,
-      S,
-      T,
-      U,
-      V,
-      W,
-      X,
-      Y,
-      Z
-    ];
+
     if (offset !== 0) {
       let _thisRow = [...ROW];
       const front = _thisRow.slice(offset);
       _thisRow = [...front, ..._thisRow.splice(0, offset)];
       ROW = [..._thisRow];
     }
+    
     for (let i = 0; i < 26; i++) {
       let _thisRow = [...ROW];
       if (GRID.length === i) {
@@ -129,7 +48,7 @@ class WinstonStateBlock {
         GRID.push(_thisRow);
       }
     }
-    return [...GRID];
+    return GRID
   }
 
   getBlock(offset) {
@@ -203,84 +122,33 @@ class WinstonStateBlock {
   }
 
   static headerArrayToObject(arr = []) {
-    return {
-      A: arr[0] || "000",
-      B: arr[1] || "000",
-      C: arr[2] || "000",
-      D: arr[3] || "000",
-      E: arr[4] || "000",
-      F: arr[5] || "000",
-      G: arr[6] || "000",
-      H: arr[7] || "000",
-      I: arr[8] || "000",
-      J: arr[9] || "000",
-      K: arr[10] || "000",
-      L: arr[11] || "000",
-      M: arr[12] || "000",
-      N: arr[13] || "000",
-      O: arr[14] || "000",
-      P: arr[15] || "000",
-      Q: arr[16] || "000",
-      R: arr[17] || "000",
-      S: arr[18] || "000",
-      T: arr[19] || "000",
-      U: arr[20] || "000",
-      V: arr[21] || "000",
-      W: arr[22] || "000",
-      X: arr[23] || "000",
-      Y: arr[24] || "000",
-      Z: arr[25] || "000"
-    };
+    const object = {}
+    for (let i = 0; i < ALPHABET.length; i++) {
+      object[ALPHABET[i]] = arr[i] || '000'
+    }
+    return object
   }
 
   static getBlockHeader(block) {
-    return [
-      block[0][0],
-      block[0][1],
-      block[0][2],
-      block[0][3],
-      block[0][4],
-      block[0][5],
-      block[0][6],
-      block[0][7],
-      block[0][8],
-      block[0][9],
-      block[0][10],
-      block[0][11],
-      block[0][12],
-      block[0][13],
-      block[0][14],
-      block[0][15],
-      block[0][16],
-      block[0][17],
-      block[0][18],
-      block[0][19],
-      block[0][20],
-      block[0][21],
-      block[0][22],
-      block[0][23],
-      block[0][24],
-      block[0][25]
-    ];
+    const array = []
+    for (let i = 0; i < ALPHABET.length; i++) {
+      block
+      array.push(block[0][i])
+    }
+    return array
   }
   static isValidBits(bits = "000") {
     if (typeof bits !== "string") return false;
     return bits.match(/[a-z,A-Z,0-9]/g).join("").length === 3;
   }
+
   toJSON() {
-    return JSON.parse(
-      JSON.stringify({
-        address: this.address,
-        block: this.getHeader(),
-        state: this.state,
-        precedingSignature: this.precedingSignature,
-        signature: this.signature || undefined,
-        index: this.index,
-        nonce: this.nonce,
-        timestamp: this.timestamp,
-        chainId: this.chainId
-      })
-    );
+    const object = {}
+    for (const key of this.keys) {
+      if (typeof this[key] === 'function') throw new Error('winStateBlock.toJSON: functions not allowed')
+      object[key] = this[key]
+    }
+    return object
   }
 }
 
